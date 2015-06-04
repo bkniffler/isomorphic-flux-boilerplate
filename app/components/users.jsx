@@ -1,50 +1,37 @@
-'use strict';
-
-import React from 'react';
-import ListenerMixin from 'alt/mixins/ListenerMixin';
+import React, {Component} from 'react';
+import AltIso from 'alt/utils/AltIso';
 import {IntlMixin} from 'react-intl';
+
+import UsersStore from 'flux/stores/users';
+import UsersActions from 'flux/actions/users';
+import PageTitleActions from 'flux/actions/page-title';
 
 if (process.env.BROWSER) {
   require('styles/users.scss');
 }
 
-export default class Users extends React.Component {
+@AltIso.define(() => UsersStore.fetch())
+class Users extends Component {
   displayName = 'Users'
 
   static contextTypes = {
     router: React.PropTypes.func
   }
 
-  static propTypes = {
-    flux: React.PropTypes.object.isRequired
-  }
-
   _getIntlMessage = IntlMixin.getIntlMessage
 
-  state = this.props.flux
-    .getStore('users')
-    .getState();
+  state = UsersStore.getState();
 
   componentWillMount() {
-    this.props.flux
-      .getActions('page-title')
-      .set(this._getIntlMessage('users.page-title'));
-
-    this.props.flux
-      .getActions('users')
-      .fetch();
+    PageTitleActions.set(this._getIntlMessage('users.page-title'));
   }
 
   componentDidMount() {
-    this.props.flux
-      .getStore('users')
-      .listen(this._handleStoreChange);
+    UsersStore.listen(this._handleStoreChange);
   }
 
   componentWillUnmount() {
-    this.props.flux
-      .getStore('users')
-      .unlisten(this._handleStoreChange);
+    UsersStore.unlisten(this._handleStoreChange);
   }
 
   _handleStoreChange = this._handleStoreChange.bind(this)
@@ -53,9 +40,7 @@ export default class Users extends React.Component {
   }
 
   _removeUser(index: number) {
-    this.props.flux
-      .getActions('users')
-      .remove(index);
+    UsersActions.remove(index);
   }
 
   _showProfile(seed: string) {
@@ -110,7 +95,7 @@ export default class Users extends React.Component {
         <p className='text-center'>
           <button
             ref='add-button'
-            onClick={this.props.flux.getActions('users').add}>
+            onClick={UsersStore.add}>
             {this._getIntlMessage('users.add')}
           </button>
         </p>
@@ -118,3 +103,5 @@ export default class Users extends React.Component {
     );
   }
 }
+
+export default Users;

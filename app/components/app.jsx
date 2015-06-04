@@ -1,8 +1,9 @@
-'use strict';
-
-import React from 'react';
-import {assign} from 'lodash';
+import React, {Component} from 'react';
 import {RouteHandler} from 'react-router';
+import AltIso from 'alt/utils/AltIso';
+
+import LocaleStore from 'flux/stores/locale';
+import PageTitleStore from 'flux/stores/page-title';
 
 import Header from 'components/header';
 import Footer from 'components/footer';
@@ -11,35 +12,21 @@ if (process.env.BROWSER) {
   require('styles/main.scss');
 }
 
-export default class App extends React.Component {
+@AltIso.define(({locale}) => LocaleStore.initialize(locale))
+class App extends Component {
+
   displayName = 'App'
 
-  static propTypes = {
-    flux: React.PropTypes.object.isRequired
-  }
-
-  state = this.props.flux
-    .getStore('locale')
-    .getState();
+  state = LocaleStore.getState()
 
   componentDidMount() {
-    this.props.flux
-      .getStore('locale')
-      .listen(this._handleLocaleChange);
-
-    this.props.flux
-      .getStore('page-title')
-      .listen(this._handlePageTitleChange);
+    LocaleStore.listen(this._handleLocaleChange);
+    PageTitleStore.listen(this._handlePageTitleChange);
   }
 
   componentWillUnmount() {
-    this.props.flux
-      .getStore('locale')
-      .unlisten(this._handleLocaleChange);
-
-    this.props.flux
-      .getStore('page-title')
-      .unlisten(this._handlePageTitleChange);
+    LocaleStore.unlisten(this._handleLocaleChange);
+    PageTitleStore.unlisten(this._handlePageTitleChange);
   }
 
   _handleLocaleChange = this._handleLocaleChange.bind(this)
@@ -52,13 +39,14 @@ export default class App extends React.Component {
   }
 
   render() {
-    const props: Object = assign({}, this.state, this.props);
     return (
       <div>
-        <Header {...props} />
-        <RouteHandler {...props} />
+        <Header {...this.state} />
+        <RouteHandler {...this.state} />
         <Footer />
       </div>
     );
   }
 }
+
+export default App;

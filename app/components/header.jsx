@@ -1,12 +1,8 @@
-'use strict';
-
-import React from 'react';
+import React, {Component} from 'react';
 import {Link} from 'react-router';
 import {IntlMixin} from 'react-intl';
 
 import imageResolver from 'utils/image-resolver';
-import Spinner from 'components/shared/spinner';
-import LangPicker from 'components/shared/lang-picker';
 
 // Load styles for the header
 // and load the `react-logo.png` image
@@ -20,25 +16,21 @@ else {
   reactLogo = imageResolver('images/react-logo.png');
 }
 
-export default class Header extends React.Component {
+export default class Header extends Component {
   displayName = 'Header'
-
-  static propTypes: {
-    flux: React.PropTypes.object.isRequired
-  }
 
   _getIntlMessage = IntlMixin.getIntlMessage
 
   render() {
     return (
       <header className='app--header'>
-        <Spinner store={this.props.flux.getStore('requests')} />
-        <LangPicker
-          store={this.props.flux.getStore('locale')}
-          actions={this.props.flux.getActions('locale')} />
-        <Link to='app' className='app--logo'>
+
+        <Link
+          to='app'
+          className='app--logo'>
           <img src={reactLogo} alt='react-logo' />
         </Link>
+
         <ul className='app--navbar un-select'>
           <li>
             <Link to='app'>
@@ -52,6 +44,7 @@ export default class Header extends React.Component {
           </li>
         </ul>
         <hr />
+
       </header>
     );
   }

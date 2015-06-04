@@ -1,21 +1,16 @@
-'use strict';
-
 import React from 'react';
 import {IntlMixin} from 'react-intl';
+
+import PageTitleActions from 'flux/actions/page-title';
 
 export default class Guides extends React.Component {
   displayName = 'Guides'
 
-  static propTypes = {
-    flux: React.PropTypes.object.isRequired
-  }
-
   _getIntlMessage = IntlMixin.getIntlMessage
 
   componentWillMount() {
-    this.props.flux
-      .getActions('page-title')
-      .set(this._getIntlMessage('guides.page-title'));
+    const localizedTitle = this._getIntlMessage('guides.page-title');
+    PageTitleActions.set(localizedTitle);
   }
 
   render() {

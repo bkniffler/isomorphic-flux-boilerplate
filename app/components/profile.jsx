@@ -1,52 +1,44 @@
-'use strict';
-
-import React from 'react';
-import ListenerMixin from 'alt/mixins/ListenerMixin';
+import React, {Component} from 'react';
 import {IntlMixin} from 'react-intl';
 import {capitalize, assign} from 'lodash';
+import AltIso from 'alt/utils/AltIso';
+
+import PageTitleActions from 'flux/actions/page-title';
+import UsersActions from 'flux/actions/users';
+import UsersStore from 'flux/stores/users';
 
 if (process.env.BROWSER) {
   require('styles/profile.scss');
 }
 
-export default class Profile extends React.Component {
+@AltIso.define((props) => UsersStore.fetchBySeed(props.params.seed))
+class Profile extends Component {
   displayName = 'Profile'
-
-  static propTypes = {
-    flux: React.PropTypes.object.isRequired
-  }
 
   _getIntlMessage = IntlMixin.getIntlMessage
   _formatMessage = IntlMixin.formatMessage.bind(assign({}, this, IntlMixin))
 
-  state = this.props.flux
-    .getStore('users')
-    .getBySeed(this.props.params.seed)
+  state = UsersStore.getBySeed(this.props.params.seed)
+
+  constructor(props, context) {
+    super(props, context);
+  }
 
   componentWillMount() {
     this._setPageTitle();
-
-    this.props.flux
-      .getActions('users')
-      .fetchBySeed(this.props.params.seed);
   }
 
   componentDidMount() {
-    this.props.flux
-      .getStore('users')
-      .listen(this._handleStoreChange);
+    UsersStore.listen(this._handleStoreChange);
   }
 
   componentWillUnmount() {
-    this.props.flux
-      .getStore('users')
-      .unlisten(this._handleStoreChange);
+    UsersStore.unlisten(this._handleStoreChange);
   }
 
   _handleStoreChange = this._handleStoreChange.bind(this)
   _handleStoreChange() {
-    const user: ?Object = this.props.flux
-      .getStore('users')
+    const user: ?Object = UsersStore
       .getBySeed(this.props.params.seed);
 
     return this.setState(user);
@@ -69,9 +61,7 @@ export default class Profile extends React.Component {
     }
 
     // Set page title
-    this.props.flux
-      .getActions('page-title')
-      .set(title);
+    return PageTitleActions.set(title);
   }
 
   _getFullName({first, last}) {
@@ -97,3 +87,5 @@ export default class Profile extends React.Component {
     }
   }
 }
+
+export default Profile;
