@@ -1,15 +1,18 @@
-'use strict';
-
 import fs from 'fs';
 import path from 'path';
 import debug from 'debug';
 
 import Router from 'react-router';
+import AltIso from 'alt/utils/AltIso';
 
 // Paths are relative to `app` directory
 import routes from 'routes';
-import Flux from 'utils/flux';
 import promisify from 'utils/promisify';
+import alt from 'utils/alt';
+
+import LocaleActions from 'flux/actions/locale';
+import LocaleStore from 'flux/stores/locale';
+import PageTitleStore from 'flux/stores/page-title';
 
 export default function *() {
   const isCashed = this.cashed ? yield *this.cashed() : false;
@@ -36,22 +39,13 @@ export default function *() {
       }
     });
 
-    // Init alt instance
-    const flux = new Flux();
-
     // Get request locale for rendering
     const locale = this.cookies.get('_lang') || this.acceptsLanguages(require('./config/init').locales) || 'en';
-    const {messages} = require(`data/${locale}`);
-
-    // Populate store with locale
-    flux
-      .getActions('locale')
-      .switchLocaleSuccess({locale, messages});
-
     debug('dev')(`locale of request: ${locale}`);
 
     const handler = yield promisify(router.run);
-    const {body, title} = yield flux.render(handler);
+    const body = yield AltIso.render(alt, handler, {locale});
+    const {title} = PageTitleStore.getState();
 
     // Reload './webpack-stats.json' on dev
     // cache it on production
