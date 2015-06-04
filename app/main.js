@@ -17,5 +17,5 @@ if (process.env.NODE_ENV === 'development') {
 Router.run(
   routes,
   Router.HistoryLocation,
-  (Handler, state) => AltIso.render(alt, Handler)
+  (Handler) => AltIso.render(alt, Handler)
 );
