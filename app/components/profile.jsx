@@ -20,10 +20,6 @@ class Profile extends Component {
 
   state = UsersStore.getBySeed(this.props.params.seed)
 
-  constructor(props, context) {
-    super(props, context);
-  }
-
   componentWillMount() {
     this._setPageTitle();
   }
@@ -48,7 +44,7 @@ class Profile extends Component {
   _setPageTitle() {
     let title: string;
 
-    if (this.state.user) {
+    if (this.state.user && this.state.user.user) {
       const user: Object = this.state.user.user;
       const fullName: string = this._getFullName(user.name);
 
@@ -69,7 +65,7 @@ class Profile extends Component {
   }
 
   render() {
-    if (this.state.user) {
+    if (this.state.user && this.state.user.user) {
       const user: Object = this.state.user.user;
       return (
         <div className='app--profile'>
