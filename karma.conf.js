@@ -7,14 +7,14 @@ var reporters;
 if (process.env.CONTINUOUS_INTEGRATION) {
   coverage = {
     type: 'lcov',
-    dir: 'coverage/'
+    dir: '_coverage_/'
   };
   reporters = ['coverage', 'coveralls'];
 }
 else {
   coverage = {
     type: 'html',
-    dir: 'coverage/'
+    dir: '_coverage_/'
   };
   reporters = ['progress', 'coverage'];
 }
@@ -48,10 +48,14 @@ module.exports = function (config) {
             loader: 'isparta?{babel: {stage: 1}}',
             exclude: /node_modules|test/
           },
-          {
-            test: /\.scss$/,
-            loader: 'style!css!sass'
-          },
+            {
+                test: /\.scss$/,
+                loader: 'style!css!sass'
+            },
+            {
+                test: /\.less$/,
+                loader: 'style!css!less'
+            },
           {
             test: /\.(jpe?g|png|gif|svg|woff|eot|ttf)$/,
             loader: 'file?name=[sha512:hash:base64:7].[ext]'
