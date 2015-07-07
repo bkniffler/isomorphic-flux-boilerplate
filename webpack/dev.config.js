@@ -70,6 +70,10 @@ export default {
         {
           test: /\.scss$/,
           loader: 'style!css?sourceMap!autoprefixer?browsers=last 2 version!sass?outputStyle=expanded&sourceMap'
+        },
+        {
+          test: /\.less$/,
+          loader: 'style!css?sourceMap!autoprefixer?browsers=last 2 version!less?outputStyle=expanded&sourceMap'
         }
       ]
     },
